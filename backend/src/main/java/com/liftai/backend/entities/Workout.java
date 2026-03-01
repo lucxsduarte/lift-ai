@@ -3,6 +3,8 @@ package com.liftai.backend.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -24,4 +26,8 @@ public class Workout {
 
     @Column(nullable = false)
     private String name;
+
+    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<WorkoutExercise> exercises = new ArrayList<>();
 }

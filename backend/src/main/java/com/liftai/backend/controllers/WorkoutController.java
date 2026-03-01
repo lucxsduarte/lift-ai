@@ -27,6 +27,34 @@ public class WorkoutController {
         return ResponseEntity.ok(workoutService.findWorkoutsByUser(userId));
     }
 
+    @GetMapping("/{workoutId}")
+    public ResponseEntity<WorkoutResponseDTO> getWorkoutById(
+            @RequestHeader("User-Id") final UUID userId,
+            @PathVariable final UUID workoutId) {
+
+        final var workout = workoutService.findWorkoutByIdAndUser(workoutId, userId);
+
+        final var exerciseDTOs = workout.getExercises().stream()
+                .map(we -> new WorkoutExerciseDTO(
+                        we.getId(),
+                        we.getExercise().getId(),
+                        we.getExercise().getName(),
+                        we.getTargetSets(),
+                        we.getTargetReps(),
+                        we.getBaseWeight(),
+                        we.getOrderIndex()
+                ))
+                .toList();
+
+        final var response = new WorkoutResponseDTO(
+                workout.getId(),
+                workout.getName(),
+                exerciseDTOs
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping
     public ResponseEntity<Workout> createWorkout(@RequestHeader("User-Id") final UUID userId, @Valid @RequestBody final CreateWorkoutRequest request) {
         final var newWorkout = workoutService.createWorkout(userId, request.name());
@@ -44,6 +72,16 @@ public class WorkoutController {
                 request.baseWeight()
         );
         return ResponseEntity.ok(addedExercise);
+    }
+
+    @PutMapping("/{workoutId}/exercises")
+    public ResponseEntity<Void> updateWorkoutExercises(
+            @RequestHeader("User-Id") final UUID userId,
+            @PathVariable final UUID workoutId,
+            @Valid @RequestBody final BulkUpdateExercisesRequest request) {
+
+        workoutService.updateWorkoutExercises(workoutId, userId, request.exercises());
+        return ResponseEntity.noContent().build();
     }
 
     public record CreateWorkoutRequest(
@@ -68,4 +106,45 @@ public class WorkoutController {
             BigDecimal baseWeight
     ) {
     }
+
+    public record WorkoutResponseDTO(
+            UUID id,
+            String name,
+            List<WorkoutExerciseDTO> exercises
+    ) {}
+
+    public record WorkoutExerciseDTO(
+            UUID id,
+            UUID exerciseId,
+            String exerciseName,
+            Integer targetSets,
+            Integer targetReps,
+            BigDecimal baseWeight,
+            Integer orderIndex
+    ) {}
+
+    public record BulkUpdateExercisesRequest(
+            @NotNull(message = "A lista de exercícios não pode ser nula.")
+            List<ExerciseDetailRequest> exercises
+    ) {}
+
+    public record ExerciseDetailRequest(
+            @NotNull(message = "O ID do exercício é obrigatório.")
+            UUID exerciseId,
+
+            @NotNull
+            @Min(1)
+            Integer targetSets,
+
+            @NotNull
+            @Min(1)
+            Integer targetReps,
+
+            @NotNull
+            @Min(0)
+            BigDecimal baseWeight,
+
+            @NotNull
+            Integer orderIndex
+    ) {}
 }

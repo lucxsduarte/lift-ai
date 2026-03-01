@@ -1,5 +1,6 @@
 package com.liftai.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,6 +22,7 @@ public class WorkoutExercise {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workout_id", nullable = false)
+    @JsonIgnore
     private Workout workout;
 
     @ManyToOne(fetch = FetchType.LAZY)

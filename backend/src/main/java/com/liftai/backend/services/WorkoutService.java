@@ -1,5 +1,6 @@
 package com.liftai.backend.services;
 
+import com.liftai.backend.controllers.WorkoutController;
 import com.liftai.backend.entities.User;
 import com.liftai.backend.entities.Workout;
 import com.liftai.backend.entities.WorkoutExercise;
@@ -23,6 +24,17 @@ public class WorkoutService {
     private final WorkoutRepository workoutRepository;
     private final WorkoutExerciseRepository workoutExerciseRepository;
     private final ExerciseRepository exerciseRepository;
+
+    public Workout findWorkoutByIdAndUser(final UUID workoutId, final UUID userId) {
+        final var workout = workoutRepository.findById(workoutId)
+                .orElseThrow(() -> new RuntimeException("Treino não encontrado."));
+
+        if (!workout.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Acesso negado. Este treino pertence a outro usuário.");
+        }
+
+        return workout;
+    }
 
     @Transactional
     public Workout createWorkout(final UUID userId, final String name) {
@@ -67,6 +79,30 @@ public class WorkoutService {
                 .build();
 
         return workoutExerciseRepository.save(newWorkoutExercise);
+    }
+
+    @Transactional
+    public void updateWorkoutExercises(final UUID workoutId, final UUID userId, final List<WorkoutController.ExerciseDetailRequest> requests) {
+
+        final var workout = findWorkoutByIdAndUser(workoutId, userId);
+
+        workoutExerciseRepository.deleteByWorkoutId(workoutId);
+
+        final var newExercises = requests.stream().map(req -> {
+            final var exercise = exerciseRepository.findById(req.exerciseId())
+                    .orElseThrow(() -> new RuntimeException("Exercício base não encontrado: " + req.exerciseId()));
+
+            return WorkoutExercise.builder()
+                    .workout(workout)
+                    .exercise(exercise)
+                    .targetSets(req.targetSets())
+                    .targetReps(req.targetReps())
+                    .baseWeight(req.baseWeight())
+                    .orderIndex(req.orderIndex())
+                    .build();
+        }).toList();
+
+        workoutExerciseRepository.saveAll(newExercises);
     }
 
     public List<Workout> findWorkoutsByUser(final UUID userId) {
