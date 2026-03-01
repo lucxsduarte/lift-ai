@@ -17,15 +17,13 @@ public class ExerciseController {
 
     private final ExerciseService exerciseService;
 
-    // Retorna todos os exercícios do catálogo
     @GetMapping
     public ResponseEntity<List<Exercise>> getAllExercises() {
         return ResponseEntity.ok(exerciseService.findAllExercises());
     }
 
-    // Busca exercícios filtrando pela categoria (ex: /api/exercises/category/Peito)
     @GetMapping("/category/{categoryCode}")
-    public ResponseEntity<List<Exercise>> getExercisesByCategory(@PathVariable Integer categoryCode) {
+    public ResponseEntity<List<Exercise>> getExercisesByCategory(@PathVariable final Integer categoryCode) {
         return ResponseEntity.ok(exerciseService.findExercisesByCategory(categoryCode));
     }
 
