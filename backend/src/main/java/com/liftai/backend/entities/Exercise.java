@@ -1,5 +1,6 @@
 package com.liftai.backend.entities;
 
+import com.liftai.backend.enums.ExerciseCategory;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,8 +22,8 @@ public class Exercise {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private String category;
+    @Column(name = "category_code", nullable = false)
+    private ExerciseCategory category;
 
     @Column(columnDefinition = "TEXT")
     private String description;

@@ -4,6 +4,7 @@ import com.liftai.backend.entities.Exercise;
 import com.liftai.backend.entities.User;
 import com.liftai.backend.entities.Workout;
 import com.liftai.backend.entities.WorkoutExercise;
+import com.liftai.backend.enums.ExerciseCategory;
 import com.liftai.backend.repositories.ExerciseRepository;
 import com.liftai.backend.repositories.UserRepository;
 import com.liftai.backend.repositories.WorkoutExerciseRepository;
@@ -43,11 +44,11 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     private void seedDatabase() {
         // 1. Criar Catálogo de Exercícios
-        final var benchPress = Exercise.builder().name("Supino Reto").category("Peito").description("Exercício base para peitoral com barra.").build();
-        final var inclineDumbbell = Exercise.builder().name("Supino Inclinado com Halteres").category("Peito").description("Foco na parte superior do peitoral.").build();
-        final var squat = Exercise.builder().name("Agachamento Livre").category("Pernas").description("Exercício completo para membros inferiores.").build();
-        final var deadlift = Exercise.builder().name("Levantamento Terra").category("Costas").description("Trabalha a cadeia posterior completa.").build();
-        final var pullUp = Exercise.builder().name("Barra Fixa").category("Costas").description("Excelente para largura das costas.").build();
+        final var benchPress = Exercise.builder().name("Supino Reto").category(ExerciseCategory.CHEST).description("Exercício base para peitoral com barra.").build();
+        final var inclineDumbbell = Exercise.builder().name("Supino Inclinado com Halteres").category(ExerciseCategory.CHEST).description("Foco na parte superior do peitoral.").build();
+        final var squat = Exercise.builder().name("Agachamento Livre").category(ExerciseCategory.LEGS).description("Exercício completo para membros inferiores.").build();
+        final var deadlift = Exercise.builder().name("Levantamento Terra").category(ExerciseCategory.BACK).description("Trabalha a cadeia posterior completa.").build();
+        final var pullUp = Exercise.builder().name("Barra Fixa").category(ExerciseCategory.BACK).description("Excelente para largura das costas.").build();
 
         final var exercises = Arrays.asList(benchPress, inclineDumbbell, squat, deadlift, pullUp);
         exerciseRepository.saveAll(exercises);
