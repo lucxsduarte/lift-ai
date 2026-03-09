@@ -1,7 +1,6 @@
 // src/pages/EditWorkout.tsx
 import { useState, useEffect } from 'react';
 import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
-import { GlassCard } from '../components/GlassCard';
 import { api } from '../services/api';
 
 interface Exercise {
@@ -177,7 +176,8 @@ export function EditWorkout() {
                 Voltar para o Catálogo
             </Link>
 
-            <GlassCard className="p-6 !overflow-visible relative z-50">
+            {/* A SOLUÇÃO: Trocamos o GlassCard por uma div nativa com o fundo arredondado perfeitamente definido (rounded-3xl) */}
+            <div className="p-6 bg-zinc-900/50 backdrop-blur-xl border border-white/10 rounded-3xl relative z-10 shadow-2xl">
                 <div className="mb-8 border-b border-white/5 pb-6">
                     <h2 className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-1">Montando Treino</h2>
                     <h1 className="text-3xl font-bold text-white break-words">{workoutName}</h1>
@@ -255,7 +255,7 @@ export function EditWorkout() {
                         + Adicionar à Lista
                     </button>
                 </form>
-            </GlassCard>
+            </div>
 
             {/* Renderiza a lista se houver exercícios OU um aviso limpo se a lista estiver vazia (útil para quando apaga todos) */}
             <div className={`space-y-4 relative z-10 transition-all duration-500 ${addedExercises.length > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none hidden'}`}>
