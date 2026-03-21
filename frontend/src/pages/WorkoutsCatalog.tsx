@@ -44,7 +44,7 @@ export function WorkoutsCatalog() {
                 Voltar para o Início
             </Link>
 
-            <div className="flex justify-between items-end px-2">
+            <div className="flex justify-between items-center px-2">
                 <div>
                     <h1 className="text-3xl font-bold text-white tracking-tight">Meus Treinos</h1>
                     <p className="text-zinc-500 text-sm">Gerencie sua rotina de treinos</p>
