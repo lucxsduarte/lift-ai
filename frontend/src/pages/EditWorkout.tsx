@@ -185,14 +185,14 @@ export function EditWorkout() {
                 Voltar para o Catálogo
             </Link>
 
-            <div className="p-6 bg-zinc-900/50 backdrop-blur-xl border border-white/10 rounded-3xl relative z-10 shadow-2xl">
+            <div className="p-6 bg-zinc-900/50 backdrop-blur-xl border border-white/10 rounded-3xl relative z-20 shadow-2xl">
                 <div className="mb-8 border-b border-white/5 pb-6">
                     <h2 className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-1">Montando Treino</h2>
                     <h1 className="text-3xl font-bold text-white break-words">{workoutName}</h1>
                 </div>
 
                 <form onSubmit={handleAddToQueue} className="space-y-5">
-                    <div className="space-y-2 relative">
+                    <div className="space-y-2 relative z-[100]">
                         <label className="block text-sm font-medium text-zinc-300 ml-1">Exercício <span className="text-emerald-500">*</span></label>
 
                         <button
@@ -265,7 +265,7 @@ export function EditWorkout() {
                 </form>
             </div>
 
-            <div className={`space-y-4 relative z-10 transition-all duration-500 ${addedExercises.length > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none hidden'}`}>
+            <div className={`space-y-4 relative z-0 transition-all duration-500 ${addedExercises.length > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none hidden'}`}>
                 <h3 className="text-zinc-500 text-xs font-bold uppercase tracking-widest ml-2 mt-6">
                     Exercícios Selecionados ({addedExercises.length})
                 </h3>
