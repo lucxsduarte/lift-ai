@@ -84,6 +84,14 @@ public class WorkoutController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/{workoutId}")
+    public ResponseEntity<Void> deleteWorkoutById(
+            @RequestHeader("User-Id") final UUID userId,
+            @PathVariable final UUID workoutId) {
+        workoutService.deleteWorkout(workoutId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
     public record CreateWorkoutRequest(
             @NotBlank(message = "O nome do treino não pode ser vazio.")
             String name) {

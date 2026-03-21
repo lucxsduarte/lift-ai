@@ -65,7 +65,6 @@ export function WorkoutsCatalog() {
                 <div className="py-20 text-center text-zinc-600 animate-pulse">Buscando treinos no servidor...</div>
             ) : workouts.length === 0 ? (
                 <GlassCard className="p-10 text-center">
-                    <div className="text-5xl mb-4 opacity-30">🏋️‍♂️</div>
                     <p className="text-zinc-400 mb-6">Você ainda não tem nenhum treino criado.</p>
                     <Link to="/workouts/new" className="text-emerald-400 font-bold hover:underline">
                         Criar meu primeiro treino ➜

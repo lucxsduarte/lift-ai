@@ -105,6 +105,13 @@ public class WorkoutService {
         workoutExerciseRepository.saveAll(newExercises);
     }
 
+    @Transactional
+    public void deleteWorkout(final UUID workoutId, final UUID userId) {
+        final var workout = findWorkoutByIdAndUser(workoutId, userId);
+
+        workoutRepository.delete(workout);
+    }
+
     public List<Workout> findWorkoutsByUser(final UUID userId) {
         return workoutRepository.findByUserId(userId);
     }

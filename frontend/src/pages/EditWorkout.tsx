@@ -1,7 +1,7 @@
-// src/pages/EditWorkout.tsx
 import { useState, useEffect } from 'react';
 import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
+import { ConfirmModal } from '../components/ConfirmModal';
 
 interface Exercise {
     id: string;
@@ -22,9 +22,7 @@ export function EditWorkout() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // O nome vem do clique no catálogo, mas atualizamos caso o usuário recarregue a página
     const [workoutName, setWorkoutName] = useState(location.state?.workoutName || 'Carregando...');
-
     const [exercises, setExercises] = useState<Exercise[]>([]);
     const [addedExercises, setAddedExercises] = useState<QueuedExercise[]>([]);
 
@@ -35,9 +33,10 @@ export function EditWorkout() {
     const [baseWeight, setBaseWeight] = useState<string>('');
 
     const [isSaving, setIsSaving] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-    // 1. Busca o catálogo geral de exercícios para preencher o Dropdown
     useEffect(() => {
         async function fetchExercises() {
             try {
@@ -50,7 +49,6 @@ export function EditWorkout() {
         fetchExercises();
     }, []);
 
-    // 2. Busca os dados DO TREINO atual para preencher a lista de exercícios já salvos
     useEffect(() => {
         async function loadExistingWorkout() {
             if (!id) return;
@@ -58,14 +56,11 @@ export function EditWorkout() {
                 const response = await api.get(`/workouts/${id}`);
                 const workoutData = response.data;
 
-                // Atualiza o nome real que veio do banco
                 if (workoutData.name) {
                     setWorkoutName(workoutData.name);
                 }
 
-                // Se houver exercícios salvos, mapeia para o formato do Frontend
                 if (workoutData.exercises && workoutData.exercises.length > 0) {
-                    // Ordena pela ordem que veio do banco
                     const sortedExercises = workoutData.exercises.sort((a: any, b: any) => a.orderIndex - b.orderIndex);
 
                     const mappedExercises: QueuedExercise[] = sortedExercises.map((item: any, index: number) => ({
@@ -86,7 +81,6 @@ export function EditWorkout() {
         loadExistingWorkout();
     }, [id]);
 
-    // Filtros para Inputs Numéricos
     const handleSetsRepsChange = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<string>>) => {
         let val = e.target.value;
         if (!/^\d*$/.test(val)) return;
@@ -137,24 +131,20 @@ export function EditWorkout() {
         setAddedExercises(newOrder);
     };
 
-    // 3. Salvamento Mestre em Lote (BULK PUT)
     const handleFinalSave = async () => {
         setIsSaving(true);
         try {
-            // Prepara o Array exatamente no formato do BulkUpdateExercisesRequest do Java
             const payload = {
                 exercises: addedExercises.map((ex, index) => ({
                     exerciseId: ex.exerciseId,
                     targetSets: ex.targetSets,
                     targetReps: ex.targetReps,
                     baseWeight: ex.baseWeight,
-                    orderIndex: index // Salvamos a ordem exata em que aparecem na tela!
+                    orderIndex: index
                 }))
             };
 
-            // Dispara um ÚNICO método PUT para o endpoint que recriamos
             await api.put(`/workouts/${id}/exercises`, payload);
-
             console.log('Treino atualizado em lote com sucesso no PostgreSQL!');
             navigate('/workouts');
         } catch (error) {
@@ -162,6 +152,21 @@ export function EditWorkout() {
             alert('Ocorreu um erro ao salvar o treino no servidor.');
         } finally {
             setIsSaving(false);
+        }
+    };
+
+    const executeDeleteWorkout = async () => {
+        setIsDeleteModalOpen(false);
+        setIsDeleting(true);
+
+        try {
+            await api.delete(`/workouts/${id}`);
+            navigate('/workouts');
+        } catch (error) {
+            console.error('Erro ao excluir treino:', error);
+            alert('Não foi possível excluir o treino. Tente novamente mais tarde.');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -176,7 +181,6 @@ export function EditWorkout() {
                 Voltar para o Catálogo
             </Link>
 
-            {/* A SOLUÇÃO: Trocamos o GlassCard por uma div nativa com o fundo arredondado perfeitamente definido (rounded-3xl) */}
             <div className="p-6 bg-zinc-900/50 backdrop-blur-xl border border-white/10 rounded-3xl relative z-10 shadow-2xl">
                 <div className="mb-8 border-b border-white/5 pb-6">
                     <h2 className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-1">Montando Treino</h2>
@@ -257,7 +261,6 @@ export function EditWorkout() {
                 </form>
             </div>
 
-            {/* Renderiza a lista se houver exercícios OU um aviso limpo se a lista estiver vazia (útil para quando apaga todos) */}
             <div className={`space-y-4 relative z-10 transition-all duration-500 ${addedExercises.length > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none hidden'}`}>
                 <h3 className="text-zinc-500 text-xs font-bold uppercase tracking-widest ml-2 mt-6">
                     Exercícios Selecionados ({addedExercises.length})
@@ -302,8 +305,8 @@ export function EditWorkout() {
 
                 <button
                     onClick={handleFinalSave}
-                    disabled={isSaving}
-                    className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-5 rounded-2xl font-black shadow-xl shadow-emerald-900/20 transition-all active:scale-95 flex justify-center items-center gap-3 mt-6"
+                    disabled={isSaving || isDeleting}
+                    className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-5 rounded-2xl font-black shadow-xl shadow-emerald-900/20 transition-all active:scale-95 flex justify-center items-center gap-3 mt-6 disabled:opacity-50"
                 >
                     {isSaving ? (
                         <>
@@ -314,16 +317,35 @@ export function EditWorkout() {
                 </button>
             </div>
 
-            {/* Botão de salvar alternativo para permitir zerar o treino completamente e salvar ele vazio */}
             {addedExercises.length === 0 && (
                 <button
                     onClick={handleFinalSave}
-                    disabled={isSaving}
-                    className="w-full mt-6 bg-zinc-800 text-zinc-400 py-5 rounded-2xl font-bold transition-all active:scale-95 flex justify-center items-center gap-3"
+                    disabled={isSaving || isDeleting}
+                    className="w-full mt-6 bg-zinc-800 text-zinc-400 py-5 rounded-2xl font-bold transition-all active:scale-95 flex justify-center items-center gap-3 disabled:opacity-50"
                 >
                     {isSaving ? 'LIMPANDO...' : 'SALVAR TREINO VAZIO'}
                 </button>
             )}
+
+            <button
+                type="button"
+                onClick={() => setIsDeleteModalOpen(true)}
+                disabled={isDeleting || isSaving}
+                className="w-full mt-4 bg-red-500/10 hover:bg-red-500/20 text-red-500 py-4 rounded-xl font-bold border border-red-500/20 transition-all active:scale-[0.98] disabled:opacity-50 flex justify-center items-center gap-2"
+            >
+                {isDeleting ? 'EXCLUINDO...' : 'EXCLUIR TREINO'}
+            </button>
+
+            <ConfirmModal
+                isOpen={isDeleteModalOpen}
+                title="Excluir Treino?"
+                message={`Tem certeza que deseja apagar o treino "${workoutName}"? Todos os exercícios vinculados a ele serão perdidos. Essa ação não pode ser desfeita.`}
+                confirmText="Sim, excluir"
+                cancelText="Cancelar"
+                isDestructive={true}
+                onCancel={() => setIsDeleteModalOpen(false)}
+                onConfirm={executeDeleteWorkout}
+            />
         </div>
     );
 }
