@@ -177,7 +177,7 @@ export function EditWorkout() {
     const isFormValid = exerciseId && targetSets !== '' && targetReps !== '' && baseWeight !== '';
 
     return (
-        <div className="space-y-6 pb-32">
+        <div className="space-y-6 pb-4">
             <Link to="/workouts" className="text-zinc-400 hover:text-white transition-colors text-sm font-semibold flex items-center gap-2 w-fit">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="m15 18-6-6 6-6"/>
@@ -310,39 +310,41 @@ export function EditWorkout() {
                         </button>
                     </div>
                 ))}
-
-                <button
-                    onClick={handleFinalSave}
-                    disabled={isSaving || isDeleting}
-                    className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-5 rounded-2xl font-black shadow-xl shadow-emerald-900/20 transition-all active:scale-95 flex justify-center items-center gap-3 mt-6 disabled:opacity-50"
-                >
-                    {isSaving ? (
-                        <>
-                            <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                            SINCRONIZANDO...
-                        </>
-                    ) : 'SALVAR TREINO COMPLETO'}
-                </button>
             </div>
 
-            {addedExercises.length === 0 && (
-                <button
-                    onClick={handleFinalSave}
-                    disabled={isSaving || isDeleting}
-                    className="w-full mt-6 bg-zinc-800 text-zinc-400 py-5 rounded-2xl font-bold transition-all active:scale-95 flex justify-center items-center gap-3 disabled:opacity-50"
-                >
-                    {isSaving ? 'LIMPANDO...' : 'SALVAR TREINO VAZIO'}
-                </button>
-            )}
+            <div className="flex flex-col gap-3 pt-4">
+                {addedExercises.length > 0 ? (
+                    <button
+                        onClick={handleFinalSave}
+                        disabled={isSaving || isDeleting}
+                        className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-5 rounded-2xl font-black shadow-xl shadow-emerald-900/20 transition-all active:scale-95 flex justify-center items-center gap-3 disabled:opacity-50"
+                    >
+                        {isSaving ? (
+                            <>
+                                <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                SINCRONIZANDO...
+                            </>
+                        ) : 'SALVAR TREINO COMPLETO'}
+                    </button>
+                ) : (
+                    <button
+                        onClick={handleFinalSave}
+                        disabled={isSaving || isDeleting}
+                        className="w-full bg-zinc-800 text-zinc-400 py-5 rounded-2xl font-bold transition-all active:scale-95 flex justify-center items-center gap-3 disabled:opacity-50"
+                    >
+                        {isSaving ? 'LIMPANDO...' : 'SALVAR TREINO VAZIO'}
+                    </button>
+                )}
 
-            <button
-                type="button"
-                onClick={() => setIsDeleteModalOpen(true)}
-                disabled={isDeleting || isSaving}
-                className="w-full mt-4 bg-red-500/10 hover:bg-red-500/20 text-red-500 py-4 rounded-xl font-bold border border-red-500/20 transition-all active:scale-[0.98] disabled:opacity-50 flex justify-center items-center gap-2"
-            >
-                {isDeleting ? 'EXCLUINDO...' : 'EXCLUIR TREINO'}
-            </button>
+                <button
+                    type="button"
+                    onClick={() => setIsDeleteModalOpen(true)}
+                    disabled={isDeleting || isSaving}
+                    className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-500 py-4 rounded-xl font-bold border border-red-500/20 transition-all active:scale-[0.98] disabled:opacity-50 flex justify-center items-center gap-2"
+                >
+                    {isDeleting ? 'EXCLUINDO...' : 'EXCLUIR TREINO'}
+                </button>
+            </div>
 
             <ConfirmModal
                 isOpen={isDeleteModalOpen}
