@@ -17,7 +17,6 @@ export function WorkoutsCatalog() {
     useEffect(() => {
         async function fetchWorkouts() {
             try {
-                // GET /api/workouts
                 const response = await api.get('/workouts');
                 setWorkouts(response.data);
             } catch (error) {
@@ -44,7 +43,6 @@ export function WorkoutsCatalog() {
                 Voltar para o Início
             </Link>
 
-            {/* Cabeçalho da Tela */}
             <div className="flex justify-between items-end px-2">
                 <div>
                     <h1 className="text-3xl font-bold text-white tracking-tight">Meus Treinos</h1>
