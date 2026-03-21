@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { GlassCard } from '../components/GlassCard';
-import { api } from '../services/api';
+import {useState, useEffect} from 'react';
+import {useNavigate, Link} from 'react-router-dom';
+import {GlassCard} from '../components/GlassCard';
+import {api} from '../services/api';
 
 interface Workout {
     id: string;
@@ -25,12 +25,13 @@ export function WorkoutsCatalog() {
                 setIsLoading(false);
             }
         }
+
         fetchWorkouts();
     }, []);
 
     const handleEdit = (workout: Workout) => {
         navigate(`/workouts/${workout.id}/edit`, {
-            state: { workoutName: workout.name }
+            state: {workoutName: workout.name}
         });
     };
 
@@ -75,7 +76,7 @@ export function WorkoutsCatalog() {
                             key={workout.id}
                             onClick={() => handleEdit(workout)}
                             className="cursor-pointer group animate-in fade-in slide-in-from-bottom-3 duration-500"
-                            style={{ animationDelay: `${index * 100}ms` }}
+                            style={{animationDelay: `${index * 100}ms`}}
                         >
                             <GlassCard className="p-5 hover:border-emerald-500/30 transition-all active:scale-[0.98]">
                                 <div className="flex justify-between items-center">
