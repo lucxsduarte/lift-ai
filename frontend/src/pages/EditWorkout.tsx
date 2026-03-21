@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
-import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
-import { api } from '../services/api';
-import { ConfirmModal } from '../components/ConfirmModal';
+import {useEffect, useState} from 'react';
+import {Link, useLocation, useNavigate, useParams} from 'react-router-dom';
+import {api} from '../services/api';
+import {ConfirmModal} from '../components/ConfirmModal';
+import toast from 'react-hot-toast';
 
 interface Exercise {
     id: string;
@@ -18,7 +19,7 @@ interface QueuedExercise {
 }
 
 export function EditWorkout() {
-    const { id } = useParams();
+    const {id} = useParams();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -46,6 +47,7 @@ export function EditWorkout() {
                 console.error('Erro ao buscar catálogo:', error);
             }
         }
+
         fetchExercises();
     }, []);
 
@@ -78,6 +80,7 @@ export function EditWorkout() {
                 console.error("Erro ao carregar os dados do treino:", error);
             }
         }
+
         loadExistingWorkout();
     }, [id]);
 
@@ -145,11 +148,11 @@ export function EditWorkout() {
             };
 
             await api.put(`/workouts/${id}/exercises`, payload);
-            console.log('Treino atualizado em lote com sucesso no PostgreSQL!');
+            toast.success('Treino salvo com sucesso!');
             navigate('/workouts');
         } catch (error) {
             console.error('Erro ao salvar treino:', error);
-            alert('Ocorreu um erro ao salvar o treino no servidor.');
+            toast.error('Erro ao salvar o treino no servidor.');
         } finally {
             setIsSaving(false);
         }
@@ -161,10 +164,11 @@ export function EditWorkout() {
 
         try {
             await api.delete(`/workouts/${id}`);
+            toast.success('Treino excluído permanentemente.');
             navigate('/workouts');
         } catch (error) {
             console.error('Erro ao excluir treino:', error);
-            alert('Não foi possível excluir o treino. Tente novamente mais tarde.');
+            toast.error('Não foi possível excluir o treino.');
         } finally {
             setIsDeleting(false);
         }
@@ -200,7 +204,7 @@ export function EditWorkout() {
                                 {selectedExerciseName || 'Selecione um exercício...'}
                             </span>
                             <svg className={`w-5 h-5 text-zinc-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/>
                             </svg>
                         </button>
 
@@ -274,14 +278,18 @@ export function EditWorkout() {
                                 disabled={index === 0}
                                 className="text-zinc-600 hover:text-emerald-400 disabled:opacity-20 transition-colors"
                             >
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="m18 15-6-6-6 6"/>
+                                </svg>
                             </button>
                             <button
                                 onClick={() => moveExercise(index, 'down')}
                                 disabled={index === addedExercises.length - 1}
                                 className="text-zinc-600 hover:text-emerald-400 disabled:opacity-20 transition-colors"
                             >
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="m6 9 6 6 6-6"/>
+                                </svg>
                             </button>
                         </div>
 
